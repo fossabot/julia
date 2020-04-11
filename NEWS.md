@@ -154,6 +154,12 @@ Standard library changes
 
 #### Random
 
+* A new faster algorithm ("nearly division less") is used for generating random numbers
+  within a range ([#29240]).
+  As a result, the streams of generated numbers is changed.
+  Also, for performance, the undocumented property that, given a seed and `a, b` of type `Int`,
+  `rand(a:b)` produces the same stream on 32 and 64 bits architectures, is dropped.
+
 
 #### REPL
 
