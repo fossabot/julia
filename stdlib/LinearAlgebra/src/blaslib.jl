@@ -125,7 +125,7 @@ Return the number of threads the BLAS library will use.
 function get_num_threads()
     blas = determine_blas_vendor()
     if blas === :openblas
-        return ccall(dlsym(libblas[], @blasfunc(:openblas_get_num_threads)), Cint, ())
+        return ccall(dlsym(libblas[], @blasfunc(openblas_get_num_threads)), Cint, ())
     elseif blas === :mkl
         return ccall(dlsym(libblas[], :MKL_Get_Num_Threads), Cint, ())
     end
