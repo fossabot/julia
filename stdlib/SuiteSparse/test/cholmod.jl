@@ -8,6 +8,7 @@ using Serialization
 using LinearAlgebra: issuccess, PosDefException, ZeroPivotException
 using SparseArrays
 using SparseArrays: getcolptr
+using SuiteSparse_jll
 
 # CHOLMOD tests
 Random.seed!(123)
