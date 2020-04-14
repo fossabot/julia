@@ -28,7 +28,7 @@ end
 function set_blas_lapack_lib(new_libblas::Ptr, new_liblapack::Ptr)
     # Ensure that the new blas and lapack have the same BLAS64 setting as we do:
     if determine_blas_ilp64(new_libblas, new_liblapack) != Base.USE_BLAS64
-        error("Unable to set BLAS library; ILP64 mismatch detected!")
+        error("Unable to set BLAS library; ILP64 mismatch detected! (expected USE_BLAS64 == $(Base.USE_BLAS64))")
     end
 
     libblas[] = new_libblas
@@ -59,22 +59,34 @@ function determine_blas_ilp64(libblas::Ptr, liblapack::Ptr)
         return true
     end
 
-    # We do a sanity check for `dgemm_` as a sanity check:
+    # We do a sanity check for `dgemm_`, to make sure this is a BLAS library at all
     if dlsym(libblas, :dgemm_; throw_error=false) === nothing
         error("Given BLAS library contains neither `dgemm_` nor `dgemm_64_`!")
     end
 
-    # Otherwise, we run a test by using dpotrf:
+    # At this point, we either have an ILP64 BLAS with no symbol renaming, or we have
+    # a non-ILP64 BLAS.  We need to figure out which, so we will call `dpotrf_` with
+    # a purposefully incorrect `lda` in order to get a negative return code stored in
+    # `info`, which is of type `BlasInt`.  By interpreting the result as an `Int64`,
+    # we will be able to tell the difference between a 32-bit and 64-bit value returned
+    # by the error handler.  Unfortunately, many BLAS vendors (such as OpenBLAS) will
+    # unconditionally print out an error message, so we must redirect `stdout`.
     _testmat = Float64[1.0 0.0; 0.0 -1.0]
     info = Ref{Int64}(0)
-    lda = Int64(2)
+    lda = Int64(0)
+    old_stdout = Base.stdout
+    old_stderr = Base.stderr
+    Base.redirect_stdout()
+    Base.redirect_stderr()
     ccall(dlsym(liblapack, :dpotrf_), Cvoid, (Ref{UInt8}, Ref{Int64}, Ptr{Float64}, Ref{Int64}, Ptr{Int64}),
                                               'U', size(_testmat, 1), _testmat, lda, info)
-    # `info == 2` means we succesfully passed parameters to `dpotrf`,
-    if info[] == 2
+    Base.redirect_stdout(old_stdout)
+    Base.redirect_stderr(old_stderr)
+    if info[] == Int64(-4)
+        # `info` == -4 means the backing library returned to us a valid Int64
         return true
-    elseif info[] == 2^33
-        # This means that BLAS/LAPACK are compiled as ILP64
+    elseif info[] == Int64(0x00000000fffffffc)
+        # This value is what it looks like when a routine tries to set an Int64 to Int32(-4)
         return false
     else
         error("The LAPACK library produced an undefined error code. Please verify the installation of BLAS and LAPACK.")
