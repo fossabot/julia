@@ -432,9 +432,10 @@ end
 
 function versioninfo(io::IO=stdout)
     ILP64str = Base.USE_BLAS64 ? " (ILP64)" : ""
-    if BLAS.vendor() == :openblas
-        println(io, "BLAS: libopenblas (", BLAS.openblas_get_config(), ")", ILP64str)
-    elseif BLAS.vendor() == :mkl
+    vendor = determine_blas_vendor()
+    if vendor == :openblas
+        println(io, "BLAS: libopenblas (", openblas_get_config(), ")", ILP64str)
+    elseif vendor == :mkl
         println(io, "BLAS: MKL", ILP64str)
     else
         println(io, "BLAS: ", BLAS_jll.libblas, ILP64str)

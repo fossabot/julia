@@ -44,7 +44,7 @@ recognizes only two vendor types, `:openblas` or `:mkl`.
 """
 function determine_blas_vendor(libblas::Ptr = libblas[])
     vend = :unknown
-    if dlsym(libblas, :openblas_set_num_threads; throw_error=false) !== nothing
+    if dlsym(libblas, @blasfunc(openblas_set_num_threads); throw_error=false) !== nothing
         vend = :openblas
     elseif dlsym(libblas, :MKL_Set_Num_Threads; throw_error=false) !== nothing
         vend = :mkl
@@ -91,7 +91,7 @@ Set the number of threads the BLAS library should use.
 function set_num_threads(n::Integer)
     blas = determine_blas_vendor()
     if blas === :openblas
-        return ccall(dlsym(libblas[], @blasfunc(:openblas_set_num_threads)), Cvoid, (Int32,), n)
+        return ccall(dlsym(libblas[], @blasfunc(openblas_set_num_threads)), Cvoid, (Int32,), n)
     elseif blas === :mkl
         # MKL may let us set the number of threads in several ways
         return ccall(dlsym(libblas[], :MKL_Set_Num_Threads), Cvoid, (Cint,), n)
