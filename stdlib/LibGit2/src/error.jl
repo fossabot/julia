@@ -3,6 +3,7 @@
 module Error
 
 import ..LibGit2: ensure_initialized
+using ..LibGit2_jll
 
 export GitError
 
