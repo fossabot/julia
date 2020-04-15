@@ -1,0 +1,4 @@
+UTF8PROC_JLL_BRANCH = master
+UTF8PROC_JLL_SHA1 = 16c47bad011446bdc9a880e6dcd800f6f46cebac
+UTF8PROC_JLL_GIT_URL := git://github.com/JuliaBinaryWrappers/utf8proc_jll.jl.git
+UTF8PROC_JLL_TAR_URL = https://api.github.com/repos/JuliaBinaryWrappers/utf8proc_jll.jl/tarball/$1
