@@ -47,6 +47,28 @@ let
             :Test,
             :REPL,
             :Statistics,
+
+            # Various JLL packages
+            :CompilerSupportLibraries_jll,
+            :Zlib_jll,
+            :p7zip_jll,
+            :utf8proc_jll,
+            :PCRE2_jll,
+            :dSFMT_jll,
+            :libLLVM_jll,
+            :Libm_jll,
+            :OpenLibm_jll,
+            :LibUnwind_jll,
+            :LibUV_jll,
+            :MbedTLS_jll,
+            :LibSSH2_jll,
+            :LibCURL_jll,
+            :LibGit2_jll,
+            :MPFR_jll,
+            :GMP_jll,
+            :OpenBLAS_jll,
+            :BLAS_jll,
+            :SuiteSparse_jll,
         ]
 
     maxlen = reduce(max, textwidth.(string.(stdlibs)); init=0)
