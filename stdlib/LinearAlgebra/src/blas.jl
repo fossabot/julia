@@ -628,10 +628,10 @@ Only the [`ul`](@ref stdlib-blas-uplo) triangle of `A` is used.
 """
 function symv! end
 
-for (fname, elty, lib) in ((:dsymv_,:Float64,libblas[]),
-                           (:ssymv_,:Float32,libblas[]),
-                           (:zsymv_,:ComplexF64,liblapack[]),
-                           (:csymv_,:ComplexF32,liblapack[]))
+for (fname, elty, lib) in ((:dsymv_,:Float64,libblas),
+                           (:ssymv_,:Float32,libblas),
+                           (:zsymv_,:ComplexF64,liblapack),
+                           (:csymv_,:ComplexF32,liblapack))
     # Note that the complex symv are not BLAS but auiliary functions in LAPACK
     @eval begin
              #      SUBROUTINE DSYMV(UPLO,N,ALPHA,A,LDA,X,INCX,BETA,Y,INCY)
@@ -656,7 +656,7 @@ for (fname, elty, lib) in ((:dsymv_,:Float64,libblas[]),
                 throw(DimensionMismatch("A has size $(size(A)), and y has length $(length(y))"))
             end
             chkstride1(A)
-            ccall(dlsym($lib, @blasfunc($fname)), Cvoid,
+            ccall(dlsym($lib[], @blasfunc($fname)), Cvoid,
                 (Ref{UInt8}, Ref{BlasInt}, Ref{$elty}, Ptr{$elty},
                  Ref{BlasInt}, Ptr{$elty}, Ref{BlasInt}, Ref{$elty},
                  Ptr{$elty}, Ref{BlasInt}),
@@ -925,7 +925,7 @@ for (fname, elty) in ((:dspmv_, :Float64),
                        y::Union{Ptr{$elty}, AbstractArray{$elty}},
                        incy::Integer)
 
-            ccall((@blasfunc($fname), libblas), Cvoid,
+            ccall(dlsym(libblas[], @blasfunc($fname)), Cvoid,
                   (Ref{UInt8},     # uplo,
                    Ref{BlasInt},   # n,
                    Ref{$elty},     # α,
@@ -1170,10 +1170,10 @@ Rank-1 update of the symmetric matrix `A` with vector `x` as `alpha*x*transpose(
 """
 function syr! end
 
-for (fname, elty, lib) in ((:dsyr_,:Float64,libblas[]),
-                           (:ssyr_,:Float32,libblas[]),
-                           (:zsyr_,:ComplexF64,liblapack[]),
-                           (:csyr_,:ComplexF32,liblapack[]))
+for (fname, elty, lib) in ((:dsyr_,:Float64,libblas),
+                           (:ssyr_,:Float32,libblas),
+                           (:zsyr_,:ComplexF64,liblapack),
+                           (:csyr_,:ComplexF32,liblapack))
     @eval begin
         function syr!(uplo::AbstractChar, α::$elty, x::AbstractVector{$elty}, A::AbstractMatrix{$elty})
             require_one_based_indexing(A, x)
@@ -1181,7 +1181,7 @@ for (fname, elty, lib) in ((:dsyr_,:Float64,libblas[]),
             if length(x) != n
                 throw(DimensionMismatch("A has size ($n,$n), x has length $(length(x))"))
             end
-            ccall(dlsym($lib, @blasfunc($fname)), Cvoid,
+            ccall(dlsym($lib[], @blasfunc($fname)), Cvoid,
                 (Ref{UInt8}, Ref{BlasInt}, Ref{$elty}, Ptr{$elty},
                  Ref{BlasInt}, Ptr{$elty}, Ref{BlasInt}),
                  uplo, n, α, x,
