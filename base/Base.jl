@@ -319,6 +319,7 @@ using .Enums
 # BigInts
 include("gmp.jl")
 using .GMP
+import .GMP: libgmp # We need this for hashing
 
 # float printing: requires BigInt
 include("ryu/Ryu.jl")
