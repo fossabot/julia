@@ -380,7 +380,8 @@ else
 	-$(MAKE) -C $(JULIAHOME)/deps install-Clang_jll
 endif
 
-$(build_shlibdir)/libGCCheckerPlugin.$(SHLIB_EXT): $(SRCDIR)/clangsa/GCChecker.cpp $(LLVM_CONFIG_ABSOLUTE) | analyzegc-deps-check
+$(eval $(call dir_target,$(build_shlibdir)))
+$(build_shlibdir)/libGCCheckerPlugin.$(SHLIB_EXT): $(SRCDIR)/clangsa/GCChecker.cpp $(LLVM_CONFIG_ABSOLUTE) | analyzegc-deps-check $(build_shlibdir)
 	@$(call PRINT_CC, $(CXX) -g $(fPIC) -shared -o $@ -DCLANG_PLUGIN -I$(build_includedir) -L$(build_libdir) -I$(CLANG_INCDIR) \
 		$(LLVM_CXXFLAGS) $(CLANG_LDFLAGS) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS) $(CXXLDFLAGS) $<)
 
