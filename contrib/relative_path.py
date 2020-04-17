@@ -8,7 +8,3 @@ if len(sys.argv) != 3:
 # system itself to canonicalize to `\` when it needs to, and deal with the shell escaping
 # and whatnot at the latest possible moment.
 sys.stdout.write(os.path.relpath(sys.argv[2], sys.argv[1]).replace(os.path.sep, '/'))
-
-# Always print a trailing slash if this is a directory
-if os.path.isdir(sys.argv[2]):
-    sys.stdout.write("/")
