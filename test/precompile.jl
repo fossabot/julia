@@ -258,7 +258,11 @@ try
         @test_throws ErrorException Base.read_dependency_src(cachefile, joinpath(dir, "foo.jl"))
 
         modules, deps1 = Base.cache_dependencies(cachefile)
-        stdlib_modules = filter(s -> Base.identify_package(s) !== nothing, readdir(Sys.STDLIB))
+        stdlib_modules = filter(readdir(Sys.STDLIB)) do s
+            pkg = Base.identify_package(s)
+            return pkg !== nothing &&
+                   haskey(Base.loaded_modules, pkg)
+        end
         @test Dict(modules) == merge(
             Dict(let m = Base.PkgId(s)
                     m => Base.module_build_id(Base.root_module(m))
