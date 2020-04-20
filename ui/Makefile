@@ -86,7 +86,10 @@ endif
 
 # Add `.exe` wrapper generation to properly setup `PATH` on windows to simulate `RPATH`
 ifeq ($(OS),WINNT)
-CPPFLAGS_PATH = -DPATH_ENTRIES="\"$$(echo "$(call cygpath_w,$(CSL_SHLIBDIR));$(call cygpath_w,$(LIBLLVM_SHLIBDIR))" | sed -e 's_\\_\\\\_g')\""
+define rel_path_entry
+$$$$(echo "$(call cygpath_w,$(call rel_path,$(libexecdir),$(1)))" | sed -e 's_\\_\\\\_g')
+endef
+CPPFLAGS_PATH = -DPATH_ENTRIES="\"$(call rel_path_entry,$(CSL_SHLIBDIR));$(call rel_path_entry,$(LIBLLVM_SHLIBDIR))\""
 define julia_exe_path
 -DJULIA_EXE_PATH="\"$$(echo '$(libexecdir_rel)$(PATHSEP)$(1)' | sed -e 's_\\_\\\\_g')\""
 endef
