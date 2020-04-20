@@ -80,6 +80,7 @@ function determine_blas_ilp64(libblas::Ptr, liblapack::Ptr)
     Base.redirect_stderr()
     ccall(dlsym(liblapack, :dpotrf_), Cvoid, (Ref{UInt8}, Ref{Int64}, Ptr{Float64}, Ref{Int64}, Ptr{Int64}),
                                               'U', size(_testmat, 1), _testmat, lda, info)
+    Base.Libc.flush_cstdio()
     Base.redirect_stdout(old_stdout)
     Base.redirect_stderr(old_stderr)
     if info[] == Int64(-4)
