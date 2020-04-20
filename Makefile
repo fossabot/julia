@@ -334,7 +334,13 @@ endif
 	mkdir -p $(DESTDIR)$(datarootdir)/julia/base $(DESTDIR)$(datarootdir)/julia/test
 	cp -R -L $(JULIAHOME)/base/* $(DESTDIR)$(datarootdir)/julia/base
 	cp -R -L $(JULIAHOME)/test/* $(DESTDIR)$(datarootdir)/julia/test
-	cp -R -L $(build_datarootdir)/julia/* $(DESTDIR)$(datarootdir)/julia
+	cp -Ra $(build_datarootdir)/julia/artifacts $(DESTDIR)$(datarootdir)/julia
+	# Copy everything except artifacts, collapsing symlinks
+	for f in $(build_datarootdir)/julia/*; do \
+		if [ $$(basename $${f}) != artifacts ]; then \
+			cp -R -L $${f} $(DESTDIR)$(datarootdir)/julia; \
+		fi; \
+	done
 	# Copy documentation
 	cp -R -L $(BUILDROOT)/doc/_build/html $(DESTDIR)$(docdir)/
 	# Remove various files which should not be installed
