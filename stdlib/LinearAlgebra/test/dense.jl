@@ -324,7 +324,9 @@ end
                     @test norm(α*A,Inf) ≈ abs(α)*norm(A,Inf)
 
                     # Triangle inequality
-                    @test norm(A + B,1) <= norm(A,1) + norm(B,1)
+                    normAplusB = norm(A + B,1)
+                    normAplusNormB = norm(A,1) + norm(B,1)
+                    @test normAplusB <= normAplusNormB || normAplusB ≈ normAplusNormB
                     elty <: Union{BigFloat,Complex{BigFloat},BigInt} || @test norm(A + B) <= norm(A) + norm(B) # two is default
                     @test norm(A + B,Inf) <= norm(A,Inf) + norm(B,Inf)
 
